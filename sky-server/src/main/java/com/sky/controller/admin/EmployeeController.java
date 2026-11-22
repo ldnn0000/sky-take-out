@@ -1,8 +1,10 @@
 package com.sky.controller.admin;
 
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
 import com.sky.result.Result;
@@ -11,12 +13,10 @@ import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,8 +35,8 @@ public class EmployeeController {
     /**
      * 登录
      *
-     * @param employeeLoginDTO
-     * @return
+     * @param employeeLoginDTO: 员工登录信息
+     * @return 返回登录成功，data:EmployeeLoginVO
      */
     @PostMapping("/login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
@@ -51,7 +51,9 @@ public class EmployeeController {
                 jwtProperties.getAdminSecretKey(),
                 jwtProperties.getAdminTtl(),
                 claims);
-
+        //将id存入本地线程存储空间
+        BaseContext.setCurrentId(employee.getId());
+        //返回登录成功，data:EmployeeLoginVO
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
                 .id(employee.getId())
                 .userName(employee.getUsername())
@@ -65,7 +67,7 @@ public class EmployeeController {
     /**
      * 退出
      *
-     * @return
+     * @return 返回退出成功，data:null
      */
     @PostMapping("/logout")
     public Result<String> logout() {
@@ -74,7 +76,7 @@ public class EmployeeController {
     /**
      * 新增员工
      *
-     * @param employeeLoginVO: 要添加的员工信息
+     * @param employeeDTO: 要添加的员工信息
      * @return 返回添加成功，data:null
      */
     @PostMapping
@@ -82,5 +84,14 @@ public class EmployeeController {
         log.info("新增员工：{}", employeeDTO);
         employeeService.addEmployee(employeeDTO);
         return Result.success();
+    }
+    /**
+     * 员工分页查询
+     *
+     * @return 返回员工列表，data:List<Employee>
+     */
+    @GetMapping("/page")
+    public Result getEmployeePage(EmployeePageQueryDTO employeePageQueryDTO) {
+        return Result.success(employeeService.getEmployeePage(employeePageQueryDTO));
     }
 }
