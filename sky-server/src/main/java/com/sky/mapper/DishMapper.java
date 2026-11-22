@@ -1,13 +1,19 @@
 package com.sky.mapper;
 
+import com.github.pagehelper.Page;
 import com.sky.anno.AutoFill;
+import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.entity.SetmealDish;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.awt.image.PixelGrabber;
 import java.util.List;
 
 @Mapper
@@ -31,4 +37,26 @@ public interface DishMapper {
      */
     @AutoFill(OperationType.INSERT)
     void insertFlavors(List<DishFlavor> flavors);
+    /**
+     * 分页查询菜品
+     * @param dishPageQueryDTO: 分页查询DTO
+     * @return 分页查询结果
+     */
+    Page<DishVO> selectPage(DishPageQueryDTO dishPageQueryDTO);
+    
+    @Select("select * from dish where id = #{id}")
+    Dish selectById(Long id);
+
+    void deleteBatchIds(List<Long> ids);
+
+    void deleteFlavorsBatchIds(List<Long> ids);
+    
+    SetmealDish selectByDishId(Long dishId);
+
+    /**
+     * 切换菜品起售停售状态
+     * @param status 菜品状态
+     * @param id 菜品id
+     */
+    void updateStatus(@Param("status") Integer status, @Param("id") Long id);
 }

@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
             String msg = message.split("Duplicate entry '")[1].split("'")[0];
             return Result.error(msg + " 已存在");
         }
-        return Result.error("系统异常");
+        return Result.error(message);
     }
 
 }
