@@ -25,4 +25,6 @@ public interface EmployeeMapper {
     void insert(Employee employee);
     
     Page<Employee> selectPage(String name);
+    
+    void updateStatus(Employee employee);
 }
