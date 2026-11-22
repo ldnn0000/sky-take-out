@@ -26,5 +26,8 @@ public interface EmployeeMapper {
     
     Page<Employee> selectPage(String name);
     
-    void updateStatus(Employee employee);
+    void updateById(Employee employee);
+
+    Employee selectById(Long id);
+    
 }
