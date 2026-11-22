@@ -7,7 +7,11 @@ import com.aliyun.oss.OSSException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -27,6 +31,12 @@ public class AliOssUtil {
      * @return
      */
     public String upload(byte[] bytes, String objectName) {
+
+        //按日期和UUID生成新的objectName，格式为 sky/yyyy/MM-dd/UUID.原扩展名
+        LocalDate date = LocalDate.now();
+        String datePath = date.getYear() + "/" + date.format(DateTimeFormatter.ofPattern("MM-dd"));
+        String fileName = UUID.randomUUID() + objectName.substring(objectName.lastIndexOf("."));
+        objectName = "sky/" + datePath + "/" + fileName;
 
         // 创建OSSClient实例。
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
