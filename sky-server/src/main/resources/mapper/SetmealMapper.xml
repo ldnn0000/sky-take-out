@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.SetmealMapper">
+    <insert id="insert" parameterType="com.sky.entity.Setmeal" useGeneratedKeys="true" keyProperty="id">
+        insert into setmeal (category_id, name, price, status, description, image, create_time, update_time, create_user, update_user)
+        values (#{categoryId}, #{name}, #{price}, #{status}, #{description}, #{image}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
+    </insert>
+    <insert id="insertSetmealDishes">
+        insert into setmeal_dish (setmeal_id, dish_id, name, price, copies)
+        values
+        <foreach collection="setmealDishes" item="setmealDish" separator=",">
+            (#{setmealDish.setmealId}, #{setmealDish.dishId}, #{setmealDish.name}, #{setmealDish.price}, #{setmealDish.copies})
+        </foreach>
+    </insert>
+    <update id="updateStatus" parameterType="com.sky.entity.Setmeal">
+        update setmeal
+        set status = #{status}, update_time = #{updateTime}, update_user = #{updateUser}
+        where id = #{id}
+    </update>
+    <update id="update" parameterType="com.sky.entity.Setmeal" useGeneratedKeys="true" keyProperty="id">
+        update setmeal
+        set category_id = #{categoryId}, name = #{name}, price = #{price}, status = #{status}, description = #{description}, image = #{image}, update_time = #{updateTime}, update_user = #{updateUser}
+        where id = #{id}
+    </update>
+    <delete id="deleteSetmealDishesBySetmealId" parameterType="java.lang.Long">
+        delete from setmeal_dish
+        where setmeal_id = #{id}
+    </delete>
+    <delete id="deleteBatchIds">
+        delete from setmeal
+        where id in <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteSetmealDishesBySetmealIds">
+        delete from setmeal_dish
+        where setmeal_id in <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="page" resultType="com.sky.vo.SetmealVO">
+        select s.id, s.category_id, s.name, s.price, s.status, s.description,
+               s.image, s.update_time, c.name as category_name
+        from setmeal s left join category c on s.category_id = c.id
+        <where>
+            <if test="status != null">
+                s.status = #{status}
+            </if>
+            <if test="name != null">
+                and s.name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                and s.category_id = #{categoryId}
+            </if>
+        </where>
+        order by s.update_time desc
+    </select>
+    <select id="selectById" resultType="com.sky.vo.SetmealVO">
+        select s.id, s.category_id, s.name, s.price, s.status, s.description, s.image, s.update_time,
+               c.name as category_name
+        from setmeal s left join category c on s.category_id = c.id
+        where s.id = #{id}
+    </select>
+    <select id="selectSetmealDishesBySetmealId" resultType="com.sky.entity.SetmealDish">
+        select setmeal_id, dish_id, name, price, copies
+        from setmeal_dish
+        where setmeal_id = #{setmealId}
+    </select>
+    <select id="countStatusBySetmealId" resultType="java.lang.Integer">
+        select count(s.id) 
+        from setmeal_dish s left join dish d on s.dish_id = d.id
+        where s.setmeal_id = #{id} and d.status = 0
+    </select>
+    <select id="countStatusBySetmealIds" resultType="java.lang.Integer">
+        select count(s.id) 
+        from setmeal s
+        where s.id in <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and s.status = 1
+    </select>
+</mapper>
