@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import com.github.pagehelper.Page;
 import com.sky.anno.AutoFill;
+import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
@@ -59,4 +60,10 @@ public interface DishMapper {
      * @param id 菜品id
      */
     void updateStatus(@Param("status") Integer status, @Param("id") Long id);
+
+    List<DishFlavor> selectFlavorsByDishId(Long id);
+
+    void updateById(DishDTO dishDTO);
+    
+    void updateFlavors(List<DishFlavor> flavors, Long dishId);
 }
