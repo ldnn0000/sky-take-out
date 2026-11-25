@@ -89,6 +89,22 @@
         left join category on dish.category_id = category.id
         where category_id = #{categoryId}
     </select>
+    <select id="list" resultType="Dish" parameterType="Dish">
+        select * from dish
+        <where>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
 
     <insert id="insertFlavors">
         insert into dish_flavor

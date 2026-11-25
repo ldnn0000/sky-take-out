@@ -68,4 +68,6 @@ public interface DishMapper {
     void updateFlavors(List<DishFlavor> flavors, Long dishId);
 
     List<DishVO> selectByCategoryId(Long categoryId);
+    
+    List<Dish> list(Dish dish);
 }
