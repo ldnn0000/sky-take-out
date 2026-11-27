@@ -6,6 +6,7 @@ import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
 import com.sky.vo.SetmealVO;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class SetmealController {
      * @return 新增成功
      */
     @PostMapping
+    @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")
     public Result<String> addSetmeal(@RequestBody SetmealDTO setmealDTO) {
         // 调用服务层方法添加套餐
         setmealService.addSetmeal(setmealDTO);
@@ -45,6 +47,7 @@ public class SetmealController {
      * @param id 套餐id
      */
     @PostMapping("/status/{status}")
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> updateStatus(@PathVariable Integer status, Long id) {
         // 调用服务层方法切换套餐状态
         setmealService.updateStatus(id, status);
@@ -67,12 +70,14 @@ public class SetmealController {
      * @return 修改成功
      */
     @PutMapping
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> updateSetmeal(@RequestBody SetmealDTO setmealDTO) {
         // 调用服务层方法修改套餐
         setmealService.updateSetmeal(setmealDTO);
         return Result.success("修改成功");
     }
     @DeleteMapping
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> deleteSetmeal(@RequestParam List<Long> ids) {
         // 调用服务层方法删除套餐
         setmealService.deleteSetmeal(ids);
